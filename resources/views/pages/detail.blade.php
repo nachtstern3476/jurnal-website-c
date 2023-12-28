@@ -5,7 +5,7 @@
     <main class="pb-8 bg-gray-200" style="padding-bottom: 2rem">
         <section id="home" class="hero h-[280px] md:h-[350px] px-4 flex justify-center mb-20 items-center">
             <h1 class="w-[1028px] mx-auto text-3xl md:text-5xl font-semibold text-white text-center ">
-                Penelitian dan Pengabdian Masyarakat pada Perguruan Tinggi
+                {{ $journal->title }}
             </h1>
         </section>
         <section class="bg-white shadow-xl p-8 rounded-md lg:w-[921px] md:w-[718px] sm:w-[590px] mx-auto">
@@ -20,8 +20,16 @@
                 </div>
                 <h2>{{ $journal->no_sk }}</h2>
             </div>
-            <h1 class="mb-2 font-medium text-lg">{{ $journal->title }}</h1>
-            <p>{{ $journal->description }}</p>
+            <div class="flex">
+                <p class="w-full">{{ $journal->description }}</p>
+                @if ($journal->img_upload)
+                <div class="flex flex-col items-center w-full gap-4">
+                    @foreach ($journal->img_upload as $img)
+                    <img class="object-cover" src="{{asset('storage/'.$img)}}" alt="">
+                    @endforeach
+                </div>
+                @endif
+            </div>
             @if ($journal->attachment)
                 <div class="bg-white rounded-md border w-1/3 p-4 mt-6">
                     <h1 class="flex gap-2 border-b-2 border-solid border-gray-200 pb-2 mb-2">

@@ -24,8 +24,8 @@ class MainController extends Controller
     public function detail($id)
     {
         $journal = Journals::find($id);
-        if ($journal->attachment) {
-            $journal->attachment = Storage::disk('public')->url($journal->attachment);
+        if ($journal->img_upload) {
+            $journal->img_upload = explode(',', $journal->img_upload);
         }
 
         $user = User::find($journal->user_id);
@@ -40,12 +40,18 @@ class MainController extends Controller
 
     public function create_jurnal(Request $request)
     {
-        $storeAttachmentFile = $request->file('attachment')->store('public');
+        $storeAttachmentFile = $request->file('attachment')->storeAs('pdf', 'public');
+        $storeImageAttachmentFile = $request->file('images_attachment');
+        $storeImagePath = implode(',', array_map(function ($imagefile) {
+            return $imagefile->store('images', 'public');
+        }, $storeImageAttachmentFile));
+
         $journal = Journals::create([
             'user_id' => session('id'),
             'title' => $request->input('title'),
             'no_sk' => $request->input('no_sk'),
             'description' => $request->input('description'),
+            'img_upload' => $storeImagePath,
             'attachment' => $storeAttachmentFile
         ]);
 
@@ -60,10 +66,11 @@ class MainController extends Controller
     {
         $filename = Journals::find($id)->attachment;
         $filePath = storage_path("app/$filename");
-        if (!file_exists($filePath)) {
-            abort(404);
-        }
+        dd($filePath);die;
+        // if (!file_exists($filePath)) {
+        //     abort(404);
+        // }
 
-        return response()->download($filePath);
+        // return response()->download($filePath);
     }
 }
